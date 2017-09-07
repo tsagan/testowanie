@@ -1,2 +1,0 @@
-# testowanie
-automatyzacja testow
