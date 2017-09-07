@@ -1,0 +1,26 @@
+*** Settings ***
+Library    Collections
+Library    RequestsLibrary
+Suite Setup    Create Session    wsb4IT    http://wsb4it.getsandbox.com
+*** Variables ***
+${user4266242}    4266242
+${clientId}    Lubie testowac
+*** Test Cases ***
+getSandbox
+    ${response}    Get Request    wsb4IT    /users
+    ${json.data}    To Json    ${response.content}
+    ${ids}    Get From Dictionary    ${json.data}    ids
+    :FOR    ${user}    IN    @{json.data}
+    \    Log    ${user}
+    \    ${response}    Get Request    wsb4IT    /users/${user}
+getUser
+    ${headers}    Create Dictionary    clientId=${clientId}    signature=abc   timestamp=256
+    Create Session    user    http://wsb4it.getsandbox.com    headers=${headers}
+    ${response_user_4266242}    Get Request    user    /user/${user4266242}
+    Log    ${response_user_4266242.content}
+    ${json.data}    To Json    ${response_user_4266242.content}
+    Log    ${json.data}
+    ${user_data}    Get From Dictionary    ${json.data}    user
+    ${expected}    Create Dictionary    country=United Kingdom    postcode=BB12-6DH    gender=Male
+    Dictionary Should Contain Sub Dictionary    ${user_data}[privateFields]    ${expected}  
+    #${data}    Dictionary Should Contain Value  &{json.data}[user][privateFields]    country    United Kingdom
